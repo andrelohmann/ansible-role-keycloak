@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: andrelohmann
+  description: ansible galaxy role to install keycloak
+  company: smartformer UG
+
+  license: MIT
+
+  min_ansible_version: 2.7
+
+  platforms:
+    - name: Ubuntu
+      versions:
+      - xenial
+      - bionic
+
+  galaxy_tags:
+  - keycloak
+...

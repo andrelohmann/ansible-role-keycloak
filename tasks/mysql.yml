@@ -1,0 +1,153 @@
+---
+- name: install necessary python package
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - python-lxml
+    - unzip
+
+- name: get mysql connector
+  get_url:
+    url: "{{ keycloak_mysql_connector_url }}"
+    dest: "{{ keycloak_dir }}"
+
+- name: unpack keycloak
+  unarchive:
+    src: "{{ keycloak_dir }}/mysql-connector-java-{{ keycloak_mysql_connector_version }}.zip"
+    dest: "{{ keycloak_dir }}"
+    copy: no
+
+- name: create the module directoy
+  file:
+    path: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/com/mysql/main"
+    state: directory
+    owner: keycloak
+    group: keycloak
+    mode: 0775
+    recurse: yes
+
+- name: copy the connector to the module folder
+  copy:
+    remote_src: True
+    src: "{{ keycloak_dir }}/mysql-connector-java-{{ keycloak_mysql_connector_version }}/mysql-connector-java-{{ keycloak_mysql_connector_version }}.jar"
+    dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/com/mysql/main"
+
+- name: copy mysql module.xml template
+  template:
+    owner: root
+    group: root
+    mode: 0644
+    src: mysql.module.xml.j2
+    dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/com/mysql/main/module.xml"
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:drivers
+    add_children:
+    - driver:
+        name: "mysql"
+        module: "com.mysql"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:drivers/sub:driver[@module="com.mysql"]
+    add_children:
+    - driver-class: "com.mysql.cj.jdbc.Driver"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/@use-java-context
+    state: absent
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:connection-url
+    value: "jdbc:mysql://{{ keycloak_mysql_host }}:{{ keycloak_mysql_port }}/{{ keycloak_mysql_database }}?useSSL=false&characterEncoding=UTF-8"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:driver
+    value: "mysql"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:security/sub:user-name
+    value: "{{ keycloak_mysql_user }}"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:security/sub:password
+    value: "{{ keycloak_mysql_password }}"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]
+    add_children:
+    - pool
+    - validation
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:pool
+    add_children:
+    - min-pool-size: "5"
+    - max-pool-size: "15"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+- name: modify standalone.xml
+  xml:
+    path: "{{ keycloak_jboss_home }}/standalone/configuration/standalone.xml"
+    xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:validation
+    add_children:
+    - valid-connection-checker:
+        class-name: "org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"
+    - validate-on-match: "true"
+    - exception-sorter:
+        class-name: "org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"
+    namespaces:
+      srv: urn:jboss:domain:8.0
+      sub: urn:jboss:domain:datasources:5.0
+
+...
