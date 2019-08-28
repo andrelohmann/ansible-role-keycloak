@@ -56,7 +56,7 @@
         name: "mysql"
         module: "com.mysql"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -66,7 +66,7 @@
     add_children:
     - driver-class: "com.mysql.cj.jdbc.Driver"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -75,7 +75,7 @@
     xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/@use-java-context
     state: absent
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -84,7 +84,7 @@
     xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:connection-url
     value: "jdbc:mysql://{{ keycloak_mysql_host }}:{{ keycloak_mysql_port }}/{{ keycloak_mysql_database }}?useSSL=false&characterEncoding=UTF-8"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -93,7 +93,7 @@
     xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:driver
     value: "mysql"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -102,7 +102,7 @@
     xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:security/sub:user-name
     value: "{{ keycloak_mysql_user }}"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -111,7 +111,7 @@
     xpath: /srv:server/srv:profile/sub:subsystem/sub:datasources/sub:datasource[@jndi-name="java:jboss/datasources/KeycloakDS"]/sub:security/sub:password
     value: "{{ keycloak_mysql_password }}"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -122,7 +122,7 @@
     - pool
     - validation
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -133,7 +133,7 @@
     - min-pool-size: "5"
     - max-pool-size: "15"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 - name: modify standalone.xml
@@ -147,7 +147,7 @@
     - exception-sorter:
         class-name: "org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"
     namespaces:
-      srv: urn:jboss:domain:8.0
+      srv: urn:jboss:domain:10.0
       sub: urn:jboss:domain:datasources:5.0
 
 ...

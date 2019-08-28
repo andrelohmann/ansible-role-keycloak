@@ -2,7 +2,23 @@
 - hosts: localhost
   become: true
   become_method: sudo
+  vars:
+    zulu_openjdk_version: "12"
+    percona_mysql_root_password: SOMELONGPASSWORD
+    mysql_grants_databases:
+    - name: keycloak
+      encoding: utf8
+    mysql_grants_users:
+    - name: keycloak
+      password: keycloak
+      host: localhost
+      priv: 'keycloak.*:ALL'
+      state: present
+    keycloak_mysql: True
 
   roles:
+  - andrelohmann.zulu_openjdk
+  - andrelohmann.percona_mysql
+  - andrelohmann.mysql_grants
   - ansible-role-keycloak
 ...

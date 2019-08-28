@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: keycloak
   author: andrelohmann
   description: ansible galaxy role to install keycloak
   company: smartformer UG

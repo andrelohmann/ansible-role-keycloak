@@ -1,15 +1,17 @@
 ---
 language: python
-python: "2.7"
+python: "3.6"
 
 sudo: required
-dist: trusty
+dist: xenial
 
 # Install ansible
 addons:
   apt:
     packages:
-    - python-pip
+    - python3-pip
+    - python3-setuptools
+    - curl
 
 install:
   # Install ansible
@@ -22,8 +24,23 @@ install:
   - printf '[defaults]\nroles_path=../' >ansible.cfg
 
 script:
+  # install galaxy roles
+  - ansible-galaxy install andrelohmann.zulu_openjdk
+  - ansible-galaxy install andrelohmann.percona_mysql
+  - ansible-galaxy install andrelohmann.mysql_grants
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  # Run the role/playbook with ansible-playbook.
+  - ansible-playbook -i tests/inventory tests/test.yml --connection=local
+  # Run the role/playbook again, checking to make sure it's idempotent.
+  - >
+    ansible-playbook -i tests/inventory tests/test.yml --connection=local
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+  # get mysql version
+  - "curl -I http://localhost:8080"
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
+...

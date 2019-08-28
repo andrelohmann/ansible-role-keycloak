@@ -13,14 +13,14 @@ This role requires ubuntu.
 Dependencies
 ------------
 
-This role depends on andrelohmann.percona_mysql and andrelohmann.java8
+This role depends on andrelohmann.percona_mysql and andrelohmann.zulu_openjdk
 
 Role Variables
 --------------
 
 The default set of variables defines the settings, keycloak will be installed with
 
-    keycloak_version: 4.7.0.Final
+    keycloak_version: 7.0.0
     keycloak_dir: /var/lib/keycloak
     keycloak_archive: keycloak-{{ keycloak_version }}.tar.gz
     keycloak_url: http://downloads.jboss.org/keycloak/{{ keycloak_version }}/{{keycloak_archive }}
@@ -30,9 +30,9 @@ The default set of variables defines the settings, keycloak will be installed wi
     keycloak_bind_address: "0.0.0.0"
     keycloak_admin_username: "admin"
     keycloak_admin_password: "admin"
-    keycloak_create_admin: yes
-    keycloak_mysql: no
-    keycloak_mysql_connector_version: 8.0.13
+    keycloak_create_admin: True
+    keycloak_mysql: False
+    keycloak_mysql_connector_version: 8.0.17
     keycloak_mysql_connector_url: "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-{{ keycloak_mysql_connector_version }}.zip"
     keycloak_mysql_host: localhost
     keycloak_mysql_user: keycloak
@@ -45,7 +45,7 @@ Example Playbook
 
     - hosts: keycloak
       roles:
-         - { role: andrelohmann.keycloak }
+         - andrelohmann.keycloak
 
 License
 -------
