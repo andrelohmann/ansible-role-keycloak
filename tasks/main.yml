@@ -87,10 +87,18 @@
     include: mysql.yml
     when: keycloak_mysql
 
-  - name: keycloak systemd service enable and start
+  - name: just force systemd to reread configs
+    systemd:
+      daemon_reload: yes
+
+  - name: enable keycloak
     systemd:
       name: keycloak
       enabled: yes
+
+  - name: start keycloak
+    systemd:
+      name: keycloak
       state: started
 
   - name: create admin user
