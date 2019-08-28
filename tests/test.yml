@@ -15,6 +15,7 @@
       priv: 'keycloak.*:ALL'
       state: present
     keycloak_mysql: True
+    keycloak_bind_port: "8081"
 
   roles:
   - andrelohmann.zulu_openjdk

@@ -39,7 +39,7 @@ script:
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
   # get mysql version
-  - "curl -I http://localhost:8080"
+  - "curl -I http://localhost:8081"
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
