@@ -39,8 +39,8 @@ script:
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
   # get mysql version
-  - "sudoo netstat -tulpen"
-  - "curl -I http://127.0.0.1:8081"
+  - "sudo netstat -tulpen | grep 8081"
+  - "sudo curl -I http://127.0.0.1:8081"
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
